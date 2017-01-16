@@ -1,5 +1,7 @@
 package com.appguru.android.mylocationtracker;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -38,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
     private TextView mTextViewHome;
     private static final int REQUEST_LOCATION = 0;
     //private List<String> MyAddress ;
+    public static final String Name = "homeKey";
+    public static final String MyPREFERENCES = "MyPrefs";
+    SharedPreferences sharedpreferences;
     private String home;
 
     @Override
@@ -184,19 +189,27 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
 
             mTextView.setText("current address : "+addresses.get(0).getLocality());
             mTextViewZip.setText("current zip : "+addresses.get(0).getPostalCode());
-            if(curTime>=1 & curTime <=6)
+            if(curTime>=1 & curTime <=10)
             {
                 mTextViewHome.setText("The person resides in the city of  : "+addresses.get(0).getLocality()+"  \n at this zip  "+addresses.get(0).getPostalCode());
                 home = (String) mTextViewHome.getText();
+                sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(Name, home);
+                editor.commit();
+                Log.i("inside get home", home);
 
             }
-            else
-                if(home != null && !home.isEmpty())
-                    mTextViewHome.setText(home);
-                else
-                    mTextViewHome.setText("Please wait for 24 hrs to get the hoem location of this individual");
+            else {
+                String str = sharedpreferences.getString(Name, "");
+                if (str != null && !str.isEmpty())
+                    mTextViewHome.setText(str);
 
-           // mTextViewTime.setText(addresses.get(0).getCountryName());
+                else
+                    mTextViewHome.setText("Please wait for 24 hrs to get the home location of this individual");
+
+                // mTextViewTime.setText(addresses.get(0).getCountryName());
+            }
         }
         else
         {
